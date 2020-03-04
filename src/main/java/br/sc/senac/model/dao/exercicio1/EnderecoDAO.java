@@ -55,7 +55,48 @@ public class EnderecoDAO implements BaseDAO<Endereco>{
 	}
 
 	public Endereco consultarPorId(int id) {
-		// TODO Auto-generated method stub
+		Connection conexao = Banco.getConnection();		
+		
+		
+		String sql = " SELECT id, cep, bairro, cidade, estado"
+				+ " FROM ENDERECO WHERE id = ?";
+		
+		PreparedStatement preparedStatement = Banco.getPreparedStatement(conexao, sql);
+		Endereco enderecoConsultado = null;
+		try {
+			preparedStatement.setInt(1, id);
+			ResultSet conjuntoResultante = preparedStatement.executeQuery();
+			
+			if(conjuntoResultante.next()) {
+				enderecoConsultado = construirEnderecoDoResultSet(conjuntoResultante);
+				
+			}
+			
+		} catch (SQLException ex) {
+			// TODO Auto-generated catch block
+			System.out.println("Erro ao consultar endereço. Id: " + id 
+					+ ".Causa: "+ ex.getMessage());
+			ex.printStackTrace();
+		}
+		
+		
+		
+		
+		return enderecoConsultado;
+	}
+
+	private Endereco construirEnderecoDoResultSet(ResultSet conjuntoResultante) {
+		Endereco e = new Endereco();
+		try {
+			e = new Endereco();
+			e.setId(conjuntoResultante.getInt("Id"));
+			e.setCep(conjuntoResultante.getString("Cep"));
+			e.setBairro(conjuntoResultante.getString("Bairro"));
+			e.setCidade(conjuntoResultante.getString("Cidade"));
+			e.setEstado(conjuntoResultante.getString("Estado"));
+		}catch(SQLException ex) {
+			System.out.println("Erro ao construir endereço: Causa: "+ ex.getMessage());
+		}
 		return null;
 	}
 
